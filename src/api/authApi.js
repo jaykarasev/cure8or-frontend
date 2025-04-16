@@ -24,6 +24,7 @@ const authApi = {
 
   async signup(userData) {
     try {
+      console.log("📤 Sending signup data:", userData); //
       const res = await axios.post(`${BASE_URL}/auth/register`, userData);
       console.log("API Signup Response:", res.data); // ✅ Debug API response
 
