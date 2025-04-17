@@ -228,8 +228,10 @@ function PlaylistDetail() {
             <label htmlFor="playlist-password">Enter password:</label>
             <input
               type="text"
-              autoComplete="off"
+              id="playlist-password"
               name="playlist-access"
+              className="masked-input"
+              autoComplete="off"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
             />

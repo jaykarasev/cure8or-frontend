@@ -264,3 +264,9 @@
 .playlist-options-dropdown button:hover {
   background: #333;
 }
+
+.masked-input {
+  font-family: "text-security-disc"; /* fallback if supported */
+  -webkit-text-security: disc; /* masks input like password */
+  text-security: disc; /* non-standard but supported in some browsers */
+}
