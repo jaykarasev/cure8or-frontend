@@ -9,7 +9,6 @@ const authApi = {
         identifier,
         password,
       });
-      console.log("API Login Response:", res.data); // ✅ Debug API response
 
       if (!res.data.user) {
         console.error("Login failed: User object is missing in API response.");
@@ -24,9 +23,7 @@ const authApi = {
 
   async signup(userData) {
     try {
-      console.log("📤 Sending signup data:", userData); //
       const res = await axios.post(`${BASE_URL}/auth/register`, userData);
-      console.log("API Signup Response:", res.data); // ✅ Debug API response
 
       if (!res.data.user) {
         console.error("Signup failed: User object is missing in API response.");

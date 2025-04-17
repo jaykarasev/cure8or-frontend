@@ -14,21 +14,28 @@ function Signup() {
     password: "",
     imageUrl: "",
   });
+  const [error, setError] = useState("");
 
   function handleChange(evt) {
     const { name, value } = evt.target;
     setFormData((data) => ({ ...data, [name]: value }));
+    setError(""); // clear any previous error
   }
 
   async function handleSubmit(evt) {
     evt.preventDefault();
-    await signup(formData, navigate); // Pass navigate
+    try {
+      await signup(formData, navigate);
+    } catch (err) {
+      setError(err.message);
+    }
   }
 
   return (
     <div>
       <h2>Sign Up</h2>
       <form onSubmit={handleSubmit}>
+        {error && <div className="error">{error}</div>}
         <input
           type="text"
           name="username"

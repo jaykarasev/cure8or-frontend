@@ -77,8 +77,6 @@ function EditPlaylist() {
         password: formData.isPrivate ? formData.password : "", // Clear password if now public
       };
 
-      console.log("🔁 Updating playlist with data:", payload);
-
       await playlistsApi.updatePlaylist(id, payload, token);
       navigate(`/playlists/${id}`);
     } catch (err) {

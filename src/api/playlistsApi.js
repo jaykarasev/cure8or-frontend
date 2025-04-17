@@ -24,15 +24,11 @@ const playlistsApi = {
 
   async unlockPlaylist(playlistId, password, token) {
     try {
-      console.log(
-        `🔓 Sending unlock request for Playlist ID: ${playlistId} with password: ${password}`
-      );
       const res = await axios.post(
         `${BASE_URL}/playlists/${playlistId}/access`,
         { password },
         { headers: { Authorization: `Bearer ${token}` } }
       );
-      console.log("Playlist unlocked:", res.data);
       return res.data;
     } catch (err) {
       console.error("Error unlocking playlist:", err);
@@ -42,11 +38,9 @@ const playlistsApi = {
 
   async getPlaylistById(id, token) {
     try {
-      console.log(`🔍 Fetching playlist ${id} with token:`, token);
       const res = await axios.get(`${BASE_URL}/playlists/${id}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
-      console.log("Playlist fetched:", res.data);
       return res.data;
     } catch (err) {
       console.error("Error fetching playlist:", err);

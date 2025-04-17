@@ -7,21 +7,32 @@ function Login() {
   const { login } = useContext(AuthContext);
   const navigate = useNavigate();
   const [formData, setFormData] = useState({ identifier: "", password: "" });
+  const [error, setError] = useState("");
 
   function handleChange(evt) {
     const { name, value } = evt.target;
     setFormData((data) => ({ ...data, [name]: value }));
+    setError(""); // Clear error on change
   }
 
   async function handleSubmit(evt) {
     evt.preventDefault();
-    await login(formData.identifier, formData.password, navigate); // Pass navigate
+    try {
+      await login(formData.identifier, formData.password, navigate);
+    } catch (err) {
+      setError("Invalid username/email or password. Please try again.");
+
+      // 👇 Immediately clear the password field (keep identifier filled if you want)
+      setFormData((data) => ({ ...data, password: "" }));
+    }
   }
 
   return (
     <div>
       <h2>Login</h2>
       <form onSubmit={handleSubmit}>
+        {error && <div className="error">{error}</div>}{" "}
+        {/* 👈 Show error message */}
         <input
           type="text"
           name="identifier"

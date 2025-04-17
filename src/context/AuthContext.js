@@ -51,20 +51,18 @@ function AuthProvider({ children }) {
       const res = await authApi.login(identifier, password);
       const { token, user } = res;
 
-      // ✅ Clear old data
       localStorage.removeItem("token");
       localStorage.removeItem("user");
 
-      // ✅ Set new user and token
       setToken(token);
       setUser(user);
       localStorage.setItem("token", token);
       localStorage.setItem("user", JSON.stringify(user));
 
-      // ✅ Navigate
       navigate("/playlists");
     } catch (err) {
       console.error("Login failed:", err);
+      throw err;
     }
   }
 
@@ -79,6 +77,33 @@ function AuthProvider({ children }) {
       navigate("/playlists");
     } catch (err) {
       console.error("Signup failed:", err);
+
+      if (err.response && err.response.data?.error?.message) {
+        const messages = err.response.data.error.message;
+
+        // If it's an array, join all messages into one string
+        const errorText = Array.isArray(messages)
+          ? messages
+              .map((msg) =>
+                msg
+                  .replace("instance.", "")
+                  .replace(
+                    /does not meet minimum length of (\d+)/,
+                    "must be at least $1 characters long"
+                  )
+                  .replace("is not of a type(s) string", "is required")
+                  .replace(
+                    "is not a valid email address",
+                    "must be a valid email"
+                  )
+              )
+              .join(". ")
+          : messages;
+
+        throw new Error(errorText); // Re-throw with cleaned message
+      } else {
+        throw new Error("Signup failed. Please check your input.");
+      }
     }
   }
 
