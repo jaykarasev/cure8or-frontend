@@ -1,4 +1,3 @@
-// src/pages/EditPlaylist.js
 import React, { useState, useEffect, useContext } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import playlistsApi from "../api/playlistsApi";
@@ -36,7 +35,7 @@ function EditPlaylist() {
         });
       } catch (err) {
         console.error("Error loading playlist:", err);
-        setError("Failed to load playlist.");
+        setError("Failed to load playlist. Try again later.");
       }
     }
 
@@ -62,7 +61,6 @@ function EditPlaylist() {
   async function handleSubmit(evt) {
     evt.preventDefault();
 
-    // ✅ Prevent submission if trying to make it private without a password
     if (formData.isPrivate && !formData.password.trim()) {
       setError("Password is required when making a playlist private.");
       return;
@@ -72,16 +70,46 @@ function EditPlaylist() {
       const payload = {
         name: formData.name,
         description: formData.description,
-        imageUrl: formData.imageUrl,
+        imageUrl:
+          formData.imageUrl.trim() === "" ? null : formData.imageUrl.trim(),
         isPrivate: formData.isPrivate,
-        password: formData.isPrivate ? formData.password : "", // Clear password if now public
+        password: formData.isPrivate ? formData.password : null,
       };
 
       await playlistsApi.updatePlaylist(id, payload, token);
       navigate(`/playlists/${id}`);
     } catch (err) {
       console.error("Failed to update playlist:", err);
-      setError("Could not update playlist.");
+
+      if (err.response && err.response.data?.error?.message) {
+        const messages = err.response.data.error.message;
+
+        const errorText = Array.isArray(messages)
+          ? messages
+              .map((msg) =>
+                msg
+                  .replace("instance.", "")
+                  .replace(
+                    /does not meet minimum length of (\d+)/,
+                    "must be at least $1 characters long"
+                  )
+                  .replace("is not of a type(s) string", "is required")
+                  .replace(
+                    "is not of a type(s) boolean",
+                    "must be true or false"
+                  )
+                  .replace(
+                    'does not conform to the "uri" format',
+                    "must be a valid image URL"
+                  )
+              )
+              .join(". ")
+          : messages;
+
+        setError(errorText);
+      } else {
+        setError("Could not update playlist. Please check your input.");
+      }
     }
   }
 
@@ -97,6 +125,7 @@ function EditPlaylist() {
           name="name"
           value={formData.name}
           onChange={handleChange}
+          required
         />
 
         <label htmlFor="description">Description</label>
@@ -105,6 +134,7 @@ function EditPlaylist() {
           name="description"
           value={formData.description}
           onChange={handleChange}
+          required
         />
 
         <label htmlFor="imageUrl">Image URL</label>
@@ -132,10 +162,11 @@ function EditPlaylist() {
             <label htmlFor="password">Password</label>
             <input
               id="password"
-              type="text"
+              type="password"
               name="password"
               value={formData.password}
               onChange={handleChange}
+              required
             />
           </>
         )}

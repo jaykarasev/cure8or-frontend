@@ -79,7 +79,7 @@ describe("CreatePlaylist", () => {
           description: "Vibes for the open road",
           imageUrl: "http://image.com",
           isPrivate: false,
-          password: "",
+          password: null,
         },
         "test-token"
       );

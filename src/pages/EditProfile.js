@@ -10,6 +10,7 @@ function EditProfile() {
   const navigate = useNavigate();
 
   const [formData, setFormData] = useState({
+    username: user?.username || "",
     firstName: user?.firstName || "",
     lastName: user?.lastName || "",
     email: user?.email || "",
@@ -40,14 +41,18 @@ function EditProfile() {
   async function handleSubmit(evt) {
     evt.preventDefault();
     try {
-      await usersApi.updateUser(userId, formData, token);
+      const payload = {
+        ...formData,
+        imageUrl:
+          formData.imageUrl.trim() === "" ? null : formData.imageUrl.trim(),
+      };
 
-      // ✅ Fetch fresh user from backend and update context
+      await usersApi.updateUser(userId, payload, token);
+
       await fetchUserProfile();
-
       setSuccess(true);
       setError(null);
-      setShouldRedirect(true); // triggers redirect after profile refresh
+      setShouldRedirect(true);
     } catch (err) {
       console.error("Error updating profile:", err);
       setError("Failed to update profile. Check your password.");
@@ -58,11 +63,19 @@ function EditProfile() {
   return (
     <div className="edit-profile-page">
       <h2>Edit Profile</h2>
-      {error && <p style={{ color: "red" }}>{error}</p>}
+      {error && <div className="error">{error}</div>}
       {success && (
         <p style={{ color: "green" }}>Profile updated successfully!</p>
       )}
       <form onSubmit={handleSubmit} className="edit-profile-form">
+        <input
+          type="text"
+          name="username"
+          placeholder="Username"
+          value={formData.username}
+          onChange={handleChange}
+          required
+        />
         <input
           type="text"
           name="firstName"
